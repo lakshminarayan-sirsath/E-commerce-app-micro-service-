@@ -1,0 +1,24 @@
+# 🔧 Importing external configuration from Config Server (Optional)
+spring:
+  config:
+    import: optional:configserver:http://localhost:8888
+
+  # 📌 Unique name for this microservice (Eureka Server)
+  application:
+    name: eureka-server
+
+# 🌐 Eureka Server Configuration
+eureka:
+  instance:
+    hostname: localhost # ✅ Hostname of Eureka server
+
+  client:
+    registerWithEureka: false # ✅ Eureka Server should not register itself
+    fetchRegistry: false      # ✅ It doesn't fetch registry from others
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:8761/eureka/
+      # ✅ Use explicit port 8761 (DO NOT use ${server.port})
+
+# 🚪 Server Port Configuration
+server:
+  port: 8761 # ✅ Default port for Eureka Server

@@ -1,0 +1,174 @@
+services:
+  # postgres-sql
+  postgres:
+    container_name: ms_pg_sql # microservice_postgres_sql
+    image: postgres
+    environment:
+      POSTGRES_USER: root # root
+      POSTGRES_PASSWORD: root # root
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - microservices-net
+    restart: unless-stopped
+
+  # pg-admin (useful (GUI) for user who do not have intellij ultimate version, because data-base option on right only available for ultimate user
+  pgadmin:
+    container_name: ms_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - 5050:80
+    networks:
+      - microservices-net
+    restart: unless-stopped
+
+  # mongo-db
+  mongodb:
+    container_name: ms_mongo_db
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root # root
+      MONGO_INITDB_ROOT_PASSWORD: root # root
+    networks:
+      - microservices-net
+    restart: unless-stopped
+
+  # mongo-express
+  mongo-express: # Web-based admin interface for MongoDB (similar to pgAdmin for Postgres)
+    container_name: ms_mongo_express
+    image: mongo-express
+    restart: unless-stopped
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root # root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root # root
+      ME_CONFIG_MONGODB_SERVER: mongodb
+#      ME_CONFIG_BASICAUTH_USERNAME: admin      # 👈 Add this
+#      ME_CONFIG_BASICAUTH_PASSWORD: admin      # 👈 And this
+      ME_CONFIG_BASICAUTH: "false"
+    networks:
+      - microservices-net
+
+  # mail-dev
+  mail-dev:
+    container_name: ms_mail_dev
+    image: maildev/maildev
+    ports:
+      - 1080:1080
+      - 1025:1025
+    networks:
+      - microservices-net
+    restart: unless-stopped
+
+networks:
+  microservices-net:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
+  mongo:
+
+
+# ----------------------improved-version-----------------------------
+#services:
+#  # postgres-sql
+#  postgres:
+#    container_name: ms_pg_sql # microservice_postgres_sql
+#    image: postgres:15
+#    environment:
+#      POSTGRES_USER: postgres # Changed root to postgres
+#      POSTGRES_PASSWORD: postgres # Changed root to postgres
+#      PGDATA: /var/lib/postgresql/data
+#    volumes:
+#      - postgres:/var/lib/postgresql/data
+#    ports:
+#      - 5432:5432
+#    networks:
+#      - microservices-net
+#    restart: unless-stopped
+#
+#  # pg-admin (useful (GUI) for user who do not have intellij ultimate version, because data-base option on right only available for ultimate user)
+#  pgadmin:
+#    container_name: ms_pgadmin
+#    image: dpage/pgadmin4:8
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin@pgadmin.org}
+#      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-postgres} # Changed password to match postgres credentials
+#      PGADMIN_CONFIG_SERVER_MODE: 'False'
+#    volumes:
+#      - pgadmin:/var/lib/pgadmin
+#    ports:
+#      - 5050:80
+#    networks:
+#      - microservices-net
+#    restart: unless-stopped
+#
+#  # mongo-db
+#  mongodb:
+#    container_name: ms_mongo_db
+#    image: mongo:6
+#    ports:
+#      - 27017:27017
+#    volumes:
+#      - mongo:/data
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root # root
+#      MONGO_INITDB_ROOT_PASSWORD: root # root
+#    networks:
+#      - microservices-net
+#    restart: unless-stopped
+#
+#  # mongo-express
+#  mongo-express: # Web-based admin interface for MongoDB (similar to pgAdmin for Postgres)
+#    container_name: ms_mongo_express
+#    image: mongo-express:1.0.0-alpha
+#    restart: unless-stopped
+#    ports:
+#      - 8081:8081
+#    environment:
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: root # root
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: root # root
+#      ME_CONFIG_MONGODB_SERVER: mongodb
+#      ME_CONFIG_BASICAUTH_USERNAME: admin      # Added basic auth username
+#      ME_CONFIG_BASICAUTH_PASSWORD: admin      # Added basic auth password
+#      ME_CONFIG_BASICAUTH: "true"              # Enabled basic auth for security
+#    networks:
+#      - microservices-net
+#
+#  # mail-dev
+#  mail-dev:
+#    container_name: ms_mail_dev
+#    image: maildev/maildev:2.0.5
+#    ports:
+#      - 1080:1080
+#      - 1025:1025
+#    networks:
+#      - microservices-net
+#    restart: unless-stopped
+#
+#networks:
+#  microservices-net:
+#    driver: bridge
+#
+#volumes:
+#  postgres:
+#    name: ms_postgres_data
+#  pgadmin:
+#    name: ms_pgadmin_data
+#  mongo:
+#    name: ms_mongo_data

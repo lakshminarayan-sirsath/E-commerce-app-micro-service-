@@ -1,0 +1,23 @@
+server:
+  port: 8888 # Port on which the Config Server will run
+
+
+spring:
+  profiles:
+    active: native
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/configurations
+
+#spring:
+#  cloud:
+#    config:
+#      server:
+#        git:
+#          uri: https://github.com/your-organization/config-repo  # Git repository where config files are stored
+#          searchPaths: config  # Folder inside Git repo where config files are located
+#          cloneOnStart: true  # Clone the Git repository when the server starts
